@@ -91,8 +91,7 @@ PUBLIC_FILE_CHANNEL = environ.get('PUBLIC_FILE_CHANNEL', 'Spideyofficial_777') #
 # Links
 GRP_LNK = environ.get('GRP_LNK', 'https://t.me/deathchatting_world')
 CHNL_LNK = environ.get('CHNL_LNK', 'https://t.me/Spideyofficial_777')
-SUPPORT_CHAT 
- environ.get('SUPPORT_CHAT', 'deathchatting_world') # Support Chat Link Without https:// or @
+SUPPORT_CHAT = environ.get('SUPPORT_CHAT', 'deathchatting_world') # Support Chat Link Without https:// or @
 OWNER_LNK = environ.get('OWNER_LNK', 'https://t.me/hacker_x_official_777')
 
 # True Or False
