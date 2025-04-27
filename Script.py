@@ -12,7 +12,7 @@ class script(object):
     HELP_TXT = """<b>ʜᴇʟʟᴏ {}
 ʜᴇʀᴇ ɪs ᴀʟʟ ᴍʏ ᴜsᴇғᴜʟʟ ғᴇᴀᴛᴜʀᴇs.</b>"""
 
-    ABOUT_TEXT = """
+    ABOUT_TXT = """
 <b>❍ ᴍʏ ɴᴀᴍᴇ : <a href="https://t.me/SpideyCinemaX_AI_Bot">SᴘɪᴅᴇʏCɪɴᴇᴍᴀX_AI_Bᴏᴛ</a>
 ❍ ᴄʀᴇᴀᴛᴏʀ : <a href="https://t.me/Hacker_X_official_777">ʜᴀᴄᴋᴇʀ_x_ᴏꜰꜰɪᴄɪᴀʟ_777</a>
 ❍ ʟɪʙʀᴀʀʏ : <a href="https://pyrogram.org/">ᴘʏʀᴏɢʀᴀᴍ</a>
