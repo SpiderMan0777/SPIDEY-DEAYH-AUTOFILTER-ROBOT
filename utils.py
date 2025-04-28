@@ -736,3 +736,12 @@ async def get_seconds(time_string):
         return value * 86400 * 365
     else:
         return 0
+        
+def get_readable_time(seconds):
+    periods = [('days', 86400), ('hour', 3600), ('min', 60), ('sec', 1)]
+    result = ''
+    for period_name, period_seconds in periods:
+        if seconds >= period_seconds:
+            period_value, seconds = divmod(seconds, period_seconds)
+            result += f'{int(period_value)}{period_name}'
+    return result
