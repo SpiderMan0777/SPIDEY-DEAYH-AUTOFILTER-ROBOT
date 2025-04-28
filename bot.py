@@ -1,9 +1,3 @@
-# Don't Remove Credit @VJ_Botz
-# Subscribe YouTube Channel For Amazing Bot @Tech_VJ
-# Ask Doubt on telegram @KingVJ01
-
-# Clone Code Credit : YT - @Tech_VJ / TG - @VJ_Bots / GitHub - @VJBots
-
 import sys, glob, importlib, logging, logging.config, pytz, asyncio
 from pathlib import Path
 
@@ -60,6 +54,7 @@ async def start():
     temp.ME = me.id
     temp.U_NAME = me.username
     temp.B_NAME = me.first_name
+    temp.B_LINK = me.mention
     logging.info(script.LOGO)
     tz = pytz.timezone('Asia/Kolkata')
     today = date.today()
@@ -67,6 +62,7 @@ async def start():
     time = now.strftime("%H:%M:%S %p")
     try:
         await SpideyBot.send_message(chat_id=LOG_CHANNEL, text=script.RESTART_TXT.format(today, time))
+    await SpideyBot.send_message(chat_id=SUPPORT_GROUP, text=f"<b>{me.mention} ʀᴇsᴛᴀʀᴛᴇᴅ 🤖</b>")        
     except:
         print("Make Your Bot Admin In Log Channel With Full Rights")
     for ch in CHANNELS:
@@ -76,7 +72,7 @@ async def start():
         except:
             print("Make Your Bot Admin In File Channels With Full Rights")
     try:
-        k = await SpideyBot.send_message(chat_id=AUTH_CHANNEL, text="**Bot Restarted**")
+        k = await SpideyBot.send_message(chat_id=LOG_CHANNEL, text="**Bot Restarted**")
         await k.delete()
     except:
         print("Make Your Bot Admin In Force Subscribe Channel With Full Rights")
@@ -89,7 +85,9 @@ async def start():
     bind_address = "0.0.0.0"
     await web.TCPSite(app, bind_address, PORT).start()
     await idle()
-
+    for admin in ADMINS:
+        await SpideyBot.send_message(chat_id=admin, text=f"<b>{me.mention} ʙᴏᴛ ʀᴇsᴛᴀʀᴛᴇᴅ ✅</b>")
+        
 
 if __name__ == '__main__':
     try:
