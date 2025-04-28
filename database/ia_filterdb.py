@@ -8,6 +8,8 @@ from pyrogram.file_id import FileId
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from info import FILE_DB_URI, SEC_FILE_DB_URI, DATABASE_NAME, COLLECTION_NAME, MULTIPLE_DATABASE, USE_CAPTION_FILTER, MAX_B_TN
+from umongo import Instance, Document, fields
+
 
 # First Database For File Saving 
 client = MongoClient(FILE_DB_URI)
