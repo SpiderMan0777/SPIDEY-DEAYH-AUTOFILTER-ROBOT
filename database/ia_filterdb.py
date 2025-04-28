@@ -19,9 +19,22 @@ sec_client = MongoClient(SEC_FILE_DB_URI)
 sec_db = sec_client[DATABASE_NAME]
 sec_col = sec_db[COLLECTION_NAME]
 
+@instance.register
+class Media(Document):
+    file_id = fields.StrField(attribute='_id')
+    file_ref = fields.StrField(allow_none=True)
+    file_name = fields.StrField(required=True)
+    file_size = fields.IntField(required=True)
+    mime_type = fields.StrField(allow_none=True)
+    caption = fields.StrField(allow_none=True)
+    file_type = fields.StrField(allow_none=True)
+
+    class Meta:
+        indexes = ('$file_name', )
+        collection_name = COLLECTION_NAME
 
 async def save_file(media):
-    """Save file in the database."""
+    """Save file in the database, avoiding duplicate entries."""
     
     file_id = unpack_new_file_id(media.file_id)
     file_name = clean_file_name(media.file_name)
@@ -33,27 +46,39 @@ async def save_file(media):
         'caption': media.caption.html if media.caption else None
     }
 
+    # Check if the file is already saved before proceeding
     if is_file_already_saved(file_id, file_name):
+        print(f"{file_name} is already saved. Skipping duplicate entry.")
         return False, 0
 
     try:
         col.insert_one(file)
-        print(f"{file_name} is successfully saved.")
+        print(f"{file_name} is successfully saved in the primary database.")
         return True, 1
     except DuplicateKeyError:
-        print(f"{file_name} is already saved.")
+        print(f"{file_name} is already saved in the primary database. Skipping duplicate entry.")
         return False, 0
-    except:
+    except Exception as e:
+        print(f"Primary database error: {e}")
         if MULTIPLE_DATABASE:
             try:
+                # Double-check again before inserting into secondary DB
+                if sec_col.find_one({'file_id': file_id, 'file_name': file_name}):
+                    print(f"{file_name} is already saved in the secondary database. Skipping duplicate entry.")
+                    return False, 0
                 sec_col.insert_one(file)
-                print(f"{file_name} is successfully saved.")
+                print(f"{file_name} is successfully saved in the secondary database.")
                 return True, 1
             except DuplicateKeyError:
-                print(f"{file_name} is already saved.")
+                print(f"{file_name} is already saved in the secondary database. Skipping duplicate entry.")
+                return False, 0
+            except Exception as e:
+                print(f"Secondary database error: {e}")
                 return False, 0
         else:
-            print("Your Current File Database Is Full, Turn On Multiple Database Feature And Add Second File Mongodb To Save File.")
+            print("Your Current File Database Is Full. Turn On Multiple Database Feature And Add Secondary MongoDB To Save Files.")
+            return False, 0
+
 
 def clean_file_name(file_name):
     """Clean and format the file name."""
