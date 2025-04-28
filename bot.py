@@ -28,11 +28,13 @@ SpideyBot.start()
 loop = asyncio.get_event_loop()
 
 
-async def start():
+async def Spidey_start():
     print('\n')
-    print('Initalizing Your Bot')
+    print('Initalizing Spidey Filter Bot')
     bot_info = await SpideyBot.get_me()
+    SpideyBot.username = bot_info.username
     await initialize_clients()
+    
     for name in files:
         with open(name) as a:
             patt = Path(a.name)
@@ -43,55 +45,53 @@ async def start():
             load = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(load)
             sys.modules["plugins." + plugin_name] = load
-            print("DS Imported => " + plugin_name)
+            print("Spidey Imported => " + plugin_name)
+
     if ON_HEROKU:
         asyncio.create_task(ping_server())
+
     b_users, b_chats = await db.get_banned()
     temp.BANNED_USERS = b_users
     temp.BANNED_CHATS = b_chats
+    await Media.ensure_indexes()
+
     me = await SpideyBot.get_me()
-    temp.BOT = SpideyBot
     temp.ME = me.id
     temp.U_NAME = me.username
     temp.B_NAME = me.first_name
     temp.B_LINK = me.mention
+    SpideyBot.username = '@' + me.username
+
+    logging.info(f"{me.first_name} with Pyrogram v{__version__} (Layer {layer}) started on {me.username}.")
     logging.info(script.LOGO)
+
     tz = pytz.timezone('Asia/Kolkata')
     today = date.today()
     now = datetime.now(tz)
     time = now.strftime("%H:%M:%S %p")
+
     try:
-        await SpideyBot.send_message(chat_id=LOG_CHANNEL, text=script.RESTART_TXT.format(today, time))
-        await SpideyBot.send_message(chat_id=SUPPORT_GROUP, text=f"<b>{me.mention} ʀᴇsᴛᴀʀᴛᴇᴅ 🤖</b>")
-    except:
-        print("Make Your Bot Admin In Log Channel With Full Rights")
-    for ch in CHANNELS:
-        try:
-            k = await SpideyBot.send_message(chat_id=ch, text="**Bot Restarted**")
-            await k.delete()
-        except:
-            print("Make Your Bot Admin In File Channels With Full Rights")
-    try:
-        k = await SpideyBot.send_message(chat_id=LOG_CHANNEL, text="**Bot Restarted**")
-        await k.delete()
-    except:
-        print("Make Your Bot Admin In Force Subscribe Channel With Full Rights")
-    if CLONE_MODE == True:
-        print("Restarting All Clone Bots.......")
-        await restart_bots()
-        print("Restarted All Clone Bots.")
+        await SpideyBot.send_message(chat_id=LOG_CHANNEL, text=script.RESTART_TXT.format(me.mention, today, time))
+        await SpideyBot.send_message(chat_id=SUPPORT_GROUP, text=f"<b>{me.mention} ʀᴇsᴛᴀʀᴛᴇᴅ 🫴</b>")
+    except Exception as e:
+        print(f"Couldn't send restart message: {e}")
+
     app = web.AppRunner(await web_server())
     await app.setup()
     bind_address = "0.0.0.0"
     await web.TCPSite(app, bind_address, PORT).start()
+    
     await idle()
+
     for admin in ADMINS:
-        await SpideyBot.send_message(chat_id=admin, text=f"<b>{me.mention} ʙᴏᴛ ʀᴇsᴛᴀʀᴛᴇᴅ ✅</b>")
+        try:
+            await SpideyBot.send_message(chat_id=admin, text=f"<b>{me.mention} ʙᴏᴛ ʀᴇsᴛᴀʀᴛᴇᴅ 🫴</b>")
+        except:
+            pass
 
 
 if __name__ == '__main__':
     try:
-        loop.run_until_complete(start())
+        loop.run_until_complete(Spidey_start())
     except KeyboardInterrupt:
         logging.info('Service Stopped Bye 👋')
-
