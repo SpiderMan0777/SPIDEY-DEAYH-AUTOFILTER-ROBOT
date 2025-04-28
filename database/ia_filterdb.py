@@ -7,7 +7,7 @@ from struct import pack
 from pyrogram.file_id import FileId
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
-from info import FILE_DB_URI, SEC_FILE_DB_URI, DATABASE_NAME, COLLECTION_NAME, MULTIPLE_DATABASE, USE_CAPTION_FILTER, MAX_B_TN
+from info import * # FILE_DB_URI, SEC_FILE_DB_URI, DATABASE_NAME, COLLECTION_NAME, MULTIPLE_DATABASE, USE_CAPTION_FILTER, MAX_B_TN
 from umongo import Instance, Document, fields
 
 
@@ -15,11 +15,13 @@ from umongo import Instance, Document, fields
 client = MongoClient(FILE_DB_URI)
 db = client[DATABASE_NAME]
 col = db[COLLECTION_NAME]
+instance = Instance.from_db(db)
 
 # Second Database For File Saving
 sec_client = MongoClient(SEC_FILE_DB_URI)
 sec_db = sec_client[DATABASE_NAME]
 sec_col = sec_db[COLLECTION_NAME]
+sec_instance = Instance.from_db(sec_db)
 
 @instance.register
 class Media(Document):
@@ -34,6 +36,21 @@ class Media(Document):
     class Meta:
         indexes = ('$file_name', )
         collection_name = COLLECTION_NAME
+
+@sec_instance.register
+class SecMedia(Document):
+    file_id = fields.StrField(attribute='_id')
+    file_ref = fields.StrField(allow_none=True)
+    file_name = fields.StrField(required=True)
+    file_size = fields.IntField(required=True)
+    mime_type = fields.StrField(allow_none=True)
+    caption = fields.StrField(allow_none=True)
+    file_type = fields.StrField(allow_none=True)
+
+    class Meta:
+        indexes = ('$file_name', )
+        collection_name = SECONDARY_COLLECTION_NAME
+
 
 async def save_file(media):
     """Save file in the database, avoiding duplicate entries."""
